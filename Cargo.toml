@@ -1,0 +1,21 @@
+[package]
+name = "poc_rust_actix"
+version = "1.0.0"
+edition = "2018"
+authors = ["Richard Gomes"]
+
+[dependencies]
+log = "~0.4"
+env_logger = "~0.6"
+serde = { version = "^1.0", features=["derive"] }
+serde_derive = "^1.0"
+serde_json = "^1.0"
+actix-web = "^2.0"
+actix-http = "^1.0"
+actix-rt = "^1.0"
+futures = "0.3.1"
+mime = "0.3"
+
+[dev-dependencies]
+awc = "^1.0"
+actix-service = "~1.0"

@@ -1,0 +1,171 @@
+openapi: "3.0.0"
+
+info:
+  version: 1.0.0
+  title: actix-web demo
+  description: actix-web server and client demo
+  termsOfService: http://example.com/terms/
+  contact:
+    name: Richard Gomes
+    email: nospam@example.com
+    url: http://example.com
+  license:
+    name: Proprietary
+
+servers:
+  - url: http://127.0.0.1/api
+
+security:
+  - bearer: []
+  - cookie: []
+    
+paths:
+  /table/update:
+    post:
+      summary: Request for updating one or more records.
+      operationId: table_update
+      security:
+        - bearer: []
+        - cookie: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TableUpdateRequest'
+      responses:
+        '200':
+          description: OK.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableUpdateResponse'
+        default: 
+          description: "Error response"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableUpdateResponse'
+            
+# See: https://swagger.io/docs/specification/authentication/
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: JSESSIONID
+      
+  schemas:
+    Error: 
+      description: Contains an error code and its description.
+      type: object
+      required: 
+        - code
+        - message
+      properties: 
+        code:
+          description: error code
+          type: integer
+          format: int32
+        message:
+          description: error message
+          type: string
+    Version:
+      description: Semantic versioning information (MAJOR.MINOR.PATCH).
+      type: string
+      minimum: 5
+      maximum: 20
+      example: "1.0.0"
+    DataTable:
+      description: Data table.
+      type: object
+      properties:
+        name:
+          description: Table name.
+          type: string
+        cells:
+          description: List of cells.
+          type: array
+          minItems: 0
+          items:
+            $ref: '#/components/schemas/DataCell'
+      required:
+        - name
+        - cells
+    DataCell:
+      description: Data cell.
+      type: object
+      properties:
+        coord:
+          $ref: '#/components/schemas/Coord'
+        value:
+          description: value represented as string.
+          type: string
+      required:
+        - coord
+        - value
+    ErrorTable:
+      description: Error table.
+      type: object
+      properties:
+        name:
+          description: Table name.
+          type: string
+        cells:
+          description: List of cells.
+          type: array
+          minItems: 0
+          items:
+            $ref: '#/components/schemas/ErrorCell'
+      required:
+        - name
+        - cells
+    ErrorCell:
+      description: Error cell.
+      type: object
+      properties:
+        coord:
+          $ref: '#/components/schemas/Coord'
+        error:
+          $ref: '#/components/schemas/Error'
+      required:
+        - coord
+        - error
+    Coord:
+      description: Coordinates
+      type: object
+      properties:
+        row:
+          description: row number
+          type: integer
+        col:
+          description: column number
+          type: integer
+      required:
+        - row
+        - col
+    TableUpdateRequest:
+      description: Request for updating a table.
+      type: object
+      properties:
+        version:
+          $ref: '#/components/schemas/Version'
+        table:
+          $ref: '#/components/schemas/DataTable'
+      required:
+        - version
+        - table
+    TableUpdateResponse:
+      description: Response for a TableUpdateRequest.
+      type: object
+      properties:
+        version:
+          $ref: '#/components/schemas/Version'
+        table:
+          $ref: '#/components/schemas/ErrorTable'
+      required:
+        - version
+        - table
